@@ -100,7 +100,7 @@ var BCM = (function (exports) {
 
     CommandCombine([
         {
-            Tag: 'bcm-add',
+            Tag: 'bcm',
             Description: 'bcm add memes',
             AutoComplete: (words) => {
                 if (words.length < 1) {
