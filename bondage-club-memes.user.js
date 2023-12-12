@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         BondageClubMemes
-// @namespace    BondageClubMemes
-// @version      0.0.1
+// @name         BCM
+// @namespace    BCM
+// @version      0.1
 // @description  斗图用
 // @author       Luzi
 // @include      /^https:\/\/(www\.)?bondageprojects\.elementfx\.com\/R\d+\/(BondageClub|\d+)(\/((index|\d+)\.html)?)?$/
