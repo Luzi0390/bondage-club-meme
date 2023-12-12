@@ -8,7 +8,12 @@ body {
   bottom: 0;
   height: 4.4vw;
   width: 4.4vw;
-  background: red;
+  background: rgba(200,200,200,0.5);
+  border-radius: 10px;
+}
+
+.emoji-btn:hover {
+    background: rgba(200,200,200,0.7);
 }
 
 .emoji-list {
