@@ -90,7 +90,7 @@ var BCM = (function (exports) {
         (args, next) => {
             let data = args[0];
             if (!!data.OnlineSharedSettings) {
-                let memes_data = data.OnlineSharedSettings.Memes??memes_data;
+                memes_data = data.OnlineSharedSettings.Memes??memes_data;
                 initMemes(memes_data);
             }
             
