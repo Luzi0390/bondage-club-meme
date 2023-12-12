@@ -16,7 +16,7 @@ var BCM = (function (exports) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = "style.css";
+    link.href = "https://luzi0390.github.io/bondage-club-memes/style.css";
     document.head.appendChild(link);
 
     
