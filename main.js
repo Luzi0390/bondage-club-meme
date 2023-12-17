@@ -50,6 +50,12 @@ var BCM = (function (exports) {
         memes_item.src = url;
         memes_list.appendChild(memes_item);
     }
+    
+    function removeMemesItem(index) {
+        var memes_list = document.getElementById("memes_list");
+
+        memes_list.splice(index, 1);
+    }
 
     function initMemes(memes_data) {
         if (!memes_data) return;
@@ -81,6 +87,7 @@ var BCM = (function (exports) {
 
         memes_data.splice(index, 1);
         saveMemes();
+        removeMemesItem();
     }
     
     let memes_data = []
