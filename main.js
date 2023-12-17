@@ -443,10 +443,10 @@ var BCM = (function (exports) {
         let bottom, right;
         if (width > height * 16 / 9) {
             bottom = 0.1203 * height;
-            right = 0.002604 * width + (width * 9 / 16 / 2);
+            right = 0.002604 * width + (height * 16 / 9 / 2);
         }
         else {
-            bottom = 0.1203 * height + (height * 16 / 9 / 2);
+            bottom = 0.1203 * height + (width * 9 / 16 / 2);
             right = 0.002604 * width;
         }
 
