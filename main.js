@@ -118,7 +118,9 @@ var BCM = (function (exports) {
                 var cmd = args.split(" ")[0];
                 switch (cmd) {
                     case "add":
-                        console.log(args.split(" ")[1]);
+                        addMemes(args.split(" ")[1].replace(/(^\(+|\)+$)/gu, ""));
+                    case "remove":
+                        removeMemes(parseInt(args.split(" ")[1]));
                 }
             }
         }
