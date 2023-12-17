@@ -457,7 +457,7 @@ var BCM = (function (exports) {
         memes_list.style.height = (0.09259 * height) + 'px';
     }
 
-    addEventListener('resize', resizeWindow);
+    addEventListener('resize', refresh);
     refresh();
 }
 )({})
