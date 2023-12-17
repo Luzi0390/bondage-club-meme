@@ -17,13 +17,10 @@ body {
 }
 
 .emoji-list {
-  right: 5px;
-  bottom: calc(4.4vw + 5px);
   position: absolute;
   display: flex;
   flex-wrap: wrap;
   padding: 5px;
-  width: 200px;
   background: #fff;
   border-radius: 10000px;
   overflow-y: auto;

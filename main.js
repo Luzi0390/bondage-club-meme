@@ -451,10 +451,10 @@ var BCM = (function (exports) {
         }
 
         var memes_list = document.getElementById('memes_list');
-        memes_list.bottom = bottom;
-        memes_list.right = right;
-        memes_list.width = 0.1041 * width;
-        memes_list.height = 0.09259 * height;
+        memes_list.style.bottom = bottom + 'px';
+        memes_list.style.right = right + 'px';
+        memes_list.style.width = (0.1041 * width) + 'px';
+        memes_list.style.height = (0.09259 * height) + 'px';
     }
 
     addEventListener('resize', resizeWindow);
