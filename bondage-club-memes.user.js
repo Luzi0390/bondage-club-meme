@@ -12,10 +12,10 @@
 
 
 (function () {
-  'use strict';
+    'use strict';
 
-  const script = document.createElement("script");
-  script.src = `https://luzi0390.github.io/bondage-club-memes/main.js`;
-  window.s = script;
-  document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.src = `https://luzi0390.github.io/bondage-club-memes/main.js`;
+    window.s = script;
+    document.head.appendChild(script);
 })();
