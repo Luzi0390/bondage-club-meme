@@ -318,6 +318,8 @@ var BCM = (function (exports) {
     let width = window.innerWidth;
 
     function createMemesPanel() {
+        if (document.getElementsById("memes_list")) return;
+
         var memes_panel = document.createElement("div");
         memes_panel.classList.add("emoji-wrapper");
         memes_panel.id = "memes_panel";
@@ -334,6 +336,7 @@ var BCM = (function (exports) {
         var memes_list = document.createElement("div");
         memes_list.classList.add("emoji-list");
         memes_list.id = "memes_list";
+        memes_list.style.display = "none";
 
         memes_btn.appendChild(memes_list);
         memes_panel.appendChild(memes_btn);
@@ -362,14 +365,25 @@ var BCM = (function (exports) {
 
     let init = false;
     let memes_data = []
-    function initMemes(memes_data) {
-        if (!memes_data || init)
+    function initMemes() {
+        if (!memes_data)
             return;
 
+        init = true;
         createMemesPanel();
         for (var i = 0; i < memes_data.length; i++) {
             insertMemesItem(memes_data[i]);
         }
+    }
+
+    function showMemes() {
+        var memes_list = document.getElementById("memes_list");
+        memes_list.style.display = 'flex';
+    }
+
+    function hideMemes() {
+        var memes_list = document.getElementById("memes_list");
+        memes_list.style.display = 'none';
     }
 
     function saveMemes() {
@@ -403,7 +417,26 @@ var BCM = (function (exports) {
         let data = args[0];
         if (!!data.OnlineSharedSettings) {
             memes_data = data.OnlineSharedSettings.Memes ?? memes_data;
-            initMemes(memes_data);
+            initMemes();
+        }
+
+        next(args);
+    }
+    );
+
+    SDK.hookFunction('ChatRoomSync', 50, (args, next) => {
+        if (!!memes_data) {
+            refresh();
+            showMemes();
+        }
+
+        next(args);
+    }
+    );
+
+    SDK.hookFunction('ChatRoomLeave', 50, (args, next) => {
+        if (!!memes_data) {
+            hideMemes();
         }
 
         next(args);
@@ -440,24 +473,29 @@ var BCM = (function (exports) {
         height = window.innerHeight;
         width = window.innerWidth;
 
-        let bottom, right;
-        if (width > height * 16 / 9) {
-            bottom = 0.1203 * height;
-            right = 0.002604 * width + (height * 16 / 9 / 2);
+        let bottom, right, item_width, item_height;
+        if (width > height * 1912 / 966) {
+            let game_width = height * 1912 / 966;
+            bottom = 0.2 * height;
+            right = 0.002604 * game_width + (width - game_width) / 2;
+            item_width = (0.1041 * height * 1912 / 966) + 'px';
+            item_height = (0.12422 * height) + 'px';
         }
         else {
-            bottom = 0.1203 * height + (width * 9 / 16 / 2);
+            let game_height = width * 966 / 1912;
+            bottom = 0.2 * game_height + (height - game_height) / 2;
             right = 0.002604 * width;
+            item_width = (0.1041 * width) + 'px';
+            item_height = (0.12422 * width * 966 / 1912) + 'px';
         }
 
         var memes_list = document.getElementById('memes_list');
         memes_list.style.bottom = bottom + 'px';
         memes_list.style.right = right + 'px';
-        memes_list.style.width = (0.1041 * width) + 'px';
-        memes_list.style.height = (0.09259 * height) + 'px';
+        memes_list.style.width = item_width;
+        memes_list.style.height = item_height;
     }
 
     addEventListener('resize', refresh);
-    refresh();
 }
 )({})
