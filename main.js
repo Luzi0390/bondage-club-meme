@@ -328,7 +328,7 @@ var BCM = (function (exports) {
         })
     }
 
-    function handleMsg(data, msg, SenderCharacter, metadata, local) {
+    function handleMsg(data, _1, SenderCharacter, _2, local) {
         if (!local) {
             if (data.Content != "BCM Image") return false;
         }
@@ -344,7 +344,7 @@ var BCM = (function (exports) {
         senderTag += `<img src="${data.Dictionary[0].Url}" class="bcm-img" style="display: inline;">`;
         senderTag += '</span> ';
         div.innerHTML = senderTag
-        
+
         ChatRoomAppendChat(div);
         return true;
     }
@@ -366,6 +366,10 @@ var BCM = (function (exports) {
         var memes_list = document.createElement("div");
         memes_list.classList.add("emoji-list");
         memes_list.id = "memes_list";
+        memes_list.ondrop = (e) => {
+            addMemes(e.dataTransfer.getData('Text'));
+        }
+		memes_list.ondragover = (e) => e.preventDefault();
 
         memes_panel.appendChild(memes_list);
         document.body.appendChild(memes_panel);
@@ -380,6 +384,7 @@ var BCM = (function (exports) {
             let _url = url;
             sendImg(_url);
         }
+        memes_item.on
         memes_list.appendChild(memes_item);
     }
 
