@@ -2,6 +2,14 @@ body {
   background: #333;
 }
 
+.emoji-wrapper {
+  z-index: 1000;
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+}
+
+
 .emoji-btn {
   position: fixed;
   right: 0;
@@ -9,7 +17,8 @@ body {
   height: 4.4vw;
   width: 4.4vw;
   background: rgba(200,200,200,0.5);
-  border-radius: 10px;
+  border-radius: 100000px;
+  z-index: inherit;
 }
 
 .emoji-btn:hover {
@@ -21,9 +30,10 @@ body {
   display: flex;
   flex-wrap: wrap;
   padding: 5px;
-  background: #fff;
-  border-radius: 10000px;
+  background: #eee9;
+  border-radius: 5px;
   overflow-y: auto;
+  z-index: inherit;
 }
 
 .emoji-list::-webkit-scrollbar {
@@ -32,12 +42,12 @@ body {
 }
 
 .emoji-list::-webkit-scrollbar-track {
-  border-radius: 9999px;
+  border-radius: 5px;
   box-shadow: inset 0 0 6px #fff;
 }
 
 .emoji-list::-webkit-scrollbar-thumb {
-  border-radius: 9999px;
+  border-radius: 5px;
 }
 
 .emoji-list:hover::-webkit-scrollbar-thumb {
@@ -45,17 +55,27 @@ body {
 }
 
 .emoji-list img {
-  padding: 10px;
+  padding: 5px;
   display: block;
   width: 50%;
-  height: 80px;
+  height: 80%;
   object-fit: contain;
   box-sizing: border-box;
   border-radius: 3px;
   cursor: pointer;
   -webkit-user-drag: none;
+  z-index: inherit;
 }
 
 .emoji-list img:hover {
-  background: #eee;
+  background: #fffb;
+}
+
+.bcm-img {
+  padding: 5px;
+  width: 13%;
+  object-fit: contain;
+  box-sizing: border-box;
+  cursor: pointer;
+  vertical-align: top;
 }

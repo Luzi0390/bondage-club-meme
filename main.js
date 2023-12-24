@@ -317,29 +317,57 @@ var BCM = (function (exports) {
     let height = window.innerHeight;
     let width = window.innerWidth;
 
-    function createMemesPanel() {
-        if (document.getElementsById("memes_list")) return;
+    function sendImg(url) {
+        ServerSend("ChatRoomChat", {
+            Content: "BCM Image",
+            Type: "Hidden",
+            Dictionary: [{
+                Url: url,
+                senderName: CharacterNickname(Player),
+            }]
+        })
+    }
 
+    function handleMsg(data, msg, SenderCharacter, metadata, local) {
+        if (!local) {
+            if (data.Content != "BCM Image") return false;
+        }
+        if (!data.Dictionary || !data.Dictionary[0]) return false;
+
+        var div = document.createElement("div");
+        div.setAttribute('class', 'ChatMessage ChatMessage');
+        div.setAttribute('data-time', ChatRoomCurrentTime());
+        div.setAttribute('data-sender', data.Sender);
+
+        let senderTag = '<span class="ChatMessageName" style="color:' + (SenderCharacter.LabelColor || 'gray') + '">';
+        senderTag += data.Dictionary[0].senderName + ':';
+        senderTag += `<img src="${data.Dictionary[0].Url}" class="bcm-img" style="display: inline;">`;
+        senderTag += '</span> ';
+        div.innerHTML = senderTag
+        
+        ChatRoomAppendChat(div);
+        return true;
+    }
+
+    ChatRoomMessageHandlers.push({
+        Description: "Handle BCM msg",
+        Priority: -2,
+        Callback: (data, sender, msg, metadata) => {
+            return handleMsg(data, msg, sender, metadata);
+        }
+    });
+
+    function createMemesPanel() {
+        if (document.getElementById("memes_list")) return;
         var memes_panel = document.createElement("div");
         memes_panel.classList.add("emoji-wrapper");
         memes_panel.id = "memes_panel";
 
-        var memes_btn = document.createElement("div");
-        memes_btn.classList.add("emoji-btn");
-        memes_btn.id = "memes_btn";
-        memes_btn.onclick = () => {
-            if (!memes_panel.init) {
-                memes_panel.init = true;
-            }
-        }
-
         var memes_list = document.createElement("div");
         memes_list.classList.add("emoji-list");
         memes_list.id = "memes_list";
-        memes_list.style.display = "none";
 
-        memes_btn.appendChild(memes_list);
-        memes_panel.appendChild(memes_btn);
+        memes_panel.appendChild(memes_list);
         document.body.appendChild(memes_panel);
     }
 
@@ -348,6 +376,10 @@ var BCM = (function (exports) {
 
         var memes_item = document.createElement("img");
         memes_item.src = url;
+        memes_item.onclick = () => {
+            let _url = url;
+            sendImg(_url);
+        }
         memes_list.appendChild(memes_item);
     }
 
@@ -364,15 +396,26 @@ var BCM = (function (exports) {
     }
 
     let init = false;
-    let memes_data = []
-    function initMemes() {
-        if (!memes_data)
+    var memes_data = []
+    async function initMemes() {
+        if (!memes_data || init)
             return;
 
         init = true;
         createMemesPanel();
         for (var i = 0; i < memes_data.length; i++) {
             insertMemesItem(memes_data[i]);
+        }
+    }
+
+    function destroy() {
+        if (!memes_data)
+            return;
+
+        init = false;
+        var memes_list = document.getElementById("memes_list");
+        if (!!memes_list) {
+            memes_list.remove();
         }
     }
 
@@ -388,16 +431,12 @@ var BCM = (function (exports) {
 
     function saveMemes() {
         Player.OnlineSharedSettings.BCM = memes_data;
-        ServerSend("AccountUpdate", {
-            OnlineSharedSettings: Player.OnlineSharedSettings
-        })
+        ServerAccountUpdate.QueueData({ OnlineSharedSettings: Player.OnlineSharedSettings }, true)
     }
 
     function addMemes(url) {
         if (memes_data.includes(url))
             return;
-        //if (!/\/[^/]+\.(png|jpe?g|gif)$/u.test(url.pathname))
-        //    return;
 
         memes_data.push(url);
         insertMemesItem(url);
@@ -416,25 +455,38 @@ var BCM = (function (exports) {
     SDK.hookFunction('LoginResponse', 50, (args, next) => {
         let data = args[0];
         if (!!data.OnlineSharedSettings) {
-            memes_data = data.OnlineSharedSettings.Memes ?? memes_data;
-            initMemes();
+            memes_data = data.OnlineSharedSettings.BCM ?? memes_data;
         }
 
         next(args);
     }
     );
 
-    SDK.hookFunction('ChatRoomSync', 50, (args, next) => {
+    SDK.hookFunction('ChatRoomShowElements', 0, (args, next) => {
+        let data = args[0];
         if (!!memes_data) {
-            refresh();
             showMemes();
+            refresh();
         }
 
         next(args);
     }
     );
 
-    SDK.hookFunction('ChatRoomLeave', 50, (args, next) => {
+    SDK.hookFunction('ChatRoomSync', 0, (args, next) => {
+        let data = args[0];
+        if (!!memes_data) {
+            initMemes();
+            showMemes();
+            refresh();
+        }
+
+        next(args);
+    }
+    );
+
+    SDK.hookFunction('ChatRoomHideElements', 0, (args, next) => {
+        let data = args[0];
         if (!!memes_data) {
             hideMemes();
         }
@@ -443,16 +495,23 @@ var BCM = (function (exports) {
     }
     );
 
+    SDK.hookFunction('ChatRoomLeave', 0, (args, next) => {
+        let data = args[0];
+        if (!!memes_data) {
+            destroy();
+        }
+
+        next(args);
+    });
+
     CommandCombine([{
         Tag: 'bcm',
         Description: 'bcm add memes',
         AutoComplete: (words) => {
-            if (words.length < 1) {/* TODO... 给予命令提示
-                    ChatMessageLocal({
-                        
-                    })
-                    */
+            if (words.length < 1) {
+
             } else if (words.length == 1) {
+
             }
         }
         ,
@@ -461,35 +520,44 @@ var BCM = (function (exports) {
             switch (cmd) {
                 case "add":
                     addMemes(args.split(" ")[1].replace(/(^\(+|\)+$)/gu, ""));
+                    break;
                 case "remove":
                     removeMemes(parseInt(args.split(" ")[1]));
+                    break;
+                case "info":
+                    console.log(memes_data);
+                    break;
             }
         }
     }]);
 
     console.log(`${MOD_NAME} ${MOD_VERSION} Loaded.`);
 
+    const c_width = 1912;
+    const c_height = 966;
     function refresh() {
+        var memes_list = document.getElementById('memes_list');
+        if (!memes_list) return;
+
         height = window.innerHeight;
-        width = window.innerWidth;
+        width = window.innerWidth
 
         let bottom, right, item_width, item_height;
-        if (width > height * 1912 / 966) {
-            let game_width = height * 1912 / 966;
+        if (width > height * c_width / c_height) {
+            let game_width = height * c_width / c_height;
             bottom = 0.2 * height;
             right = 0.002604 * game_width + (width - game_width) / 2;
-            item_width = (0.1041 * height * 1912 / 966) + 'px';
+            item_width = (0.1041 * height * c_width / c_height) + 'px';
             item_height = (0.12422 * height) + 'px';
         }
         else {
-            let game_height = width * 966 / 1912;
+            let game_height = width * c_height / c_width;
             bottom = 0.2 * game_height + (height - game_height) / 2;
             right = 0.002604 * width;
             item_width = (0.1041 * width) + 'px';
-            item_height = (0.12422 * width * 966 / 1912) + 'px';
+            item_height = (0.12422 * width * c_height / c_width) + 'px';
         }
 
-        var memes_list = document.getElementById('memes_list');
         memes_list.style.bottom = bottom + 'px';
         memes_list.style.right = right + 'px';
         memes_list.style.width = item_width;
