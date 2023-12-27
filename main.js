@@ -329,10 +329,7 @@ var BCM = (function (exports) {
         })
     }
 
-    function handleMsg(data, _1, SenderCharacter, _2, local) {
-        if (!local) {
-            if (data.Content != "BCM Image") return false;
-        }
+    function handleMsg(data, _1, SenderCharacter, _2) { 
         if (!data.Dictionary || !data.Dictionary[0] || data.Dictionary[0].BCM != "BCM Image") return false;
 
         var div = document.createElement("div");
