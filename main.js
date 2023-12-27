@@ -319,9 +319,10 @@ var BCM = (function (exports) {
 
     function sendImg(url) {
         ServerSend("ChatRoomChat", {
-            Content: "BCM Image",
-            Type: "Hidden",
+            Content: url,
+            Type: "Chat",
             Dictionary: [{
+                BCM: "BCM Image",
                 Url: url,
                 senderName: CharacterNickname(Player),
             }]
@@ -332,7 +333,7 @@ var BCM = (function (exports) {
         if (!local) {
             if (data.Content != "BCM Image") return false;
         }
-        if (!data.Dictionary || !data.Dictionary[0]) return false;
+        if (!data.Dictionary || !data.Dictionary[0] || data.Dictionary[0].BCM != "BCM Image") return false;
 
         var div = document.createElement("div");
         div.setAttribute('class', 'ChatMessage ChatMessage');
